@@ -6,7 +6,9 @@ import shuffleSeed from 'shuffle-seed';
 import Card from './Card';
 
 function startNewGame() {
-  window.location.replace('/?seed=' + nanoid());
+  window.location.replace(
+    window.location.origin + window.location.pathname + '?seed=' + nanoid()
+  );
 }
 
 const Game = styled.div`
