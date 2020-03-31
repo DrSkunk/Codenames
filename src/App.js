@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { nanoid } from 'nanoid';
 import wordList from './words';
 import shuffleSeed from 'shuffle-seed';
 import Card from './Card';
+
+function saveGame(state) {
+  localStorage.setItem('savedGame', JSON.stringify(state));
+}
 
 function startNewGame() {
   window.location.replace(
@@ -35,7 +39,34 @@ export default class App extends Component {
     if (!seed) {
       startNewGame();
     }
+    try {
+      const savedGame = JSON.parse(localStorage.getItem('savedGame'));
+      if (
+        savedGame === null ||
+        savedGame.seed !== seed ||
+        !savedGame.redScore ||
+        !savedGame.blueScore ||
+        !savedGame.cards
+      ) {
+        throw new Error('Invalid game saved');
+      }
+      this.state = savedGame;
+    } catch (error) {
+      this.initGame(seed);
+    }
+    /*
+    if (savedGame !== null && savedGame.seed === seed) {
+    } else {
+      this.initGame();
+    }*/
+  }
 
+  componentDidCatch(error, info) {
+    this.setState({ hasError: true });
+    localStorage.removeItem('savedGame');
+  }
+
+  initGame(seed) {
     let colors = [
       'red',
       'red',
@@ -69,7 +100,7 @@ export default class App extends Component {
     colors = shuffleSeed.shuffle(colors, seed);
     console.log('colors', colors);
     const cards = shuffleSeed
-      .shuffle(wordList, seed)
+      .shuffle(wordList.dutch, seed)
       .slice(0, 25)
       .map((word, i) => ({ word, found: false, color: colors[i] }));
     this.state = { seed, cards, spymaster: false, redScore: 0, blueScore: 0 };
@@ -79,9 +110,13 @@ export default class App extends Component {
   }
 
   toggleSpymaster = () => {
-    this.setState(state => ({
-      spymaster: !state.spymaster
-    }));
+    this.setState(state => {
+      const newState = {
+        spymaster: !state.spymaster
+      };
+      saveGame(newState);
+      return newState;
+    });
   };
 
   calculateScore = state => {
@@ -116,6 +151,7 @@ export default class App extends Component {
       const score = this.calculateScore(newState);
       newState.redScore = score.redScore;
       newState.blueScore = score.blueScore;
+      saveGame(newState);
       return newState;
     });
   };
