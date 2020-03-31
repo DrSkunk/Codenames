@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled from 'styled-components';
 import { nanoid } from 'nanoid';
 import wordList from './words';
 import shuffleSeed from 'shuffle-seed';
@@ -24,9 +24,6 @@ const Score = styled.div`
   margin: 10px 0;
 `;
 const Board = styled.div`
-  /* display: grid;
-  grid-template-columns: repeat(5, 100px);
-  grid-gap: 10px; */
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -52,13 +49,8 @@ export default class App extends Component {
       }
       this.state = savedGame;
     } catch (error) {
-      this.initGame(seed);
+      this.state = this.initGame(seed);
     }
-    /*
-    if (savedGame !== null && savedGame.seed === seed) {
-    } else {
-      this.initGame();
-    }*/
   }
 
   componentDidCatch(error, info) {
@@ -103,10 +95,11 @@ export default class App extends Component {
       .shuffle(wordList.dutch, seed)
       .slice(0, 25)
       .map((word, i) => ({ word, found: false, color: colors[i] }));
-    this.state = { seed, cards, spymaster: false, redScore: 0, blueScore: 0 };
-    const score = this.calculateScore(this.state);
-    this.state.redScore = score.redScore;
-    this.state.blueScore = score.blueScore;
+    const state = { seed, cards, spymaster: false, redScore: 0, blueScore: 0 };
+    const score = this.calculateScore(state);
+    state.redScore = score.redScore;
+    state.blueScore = score.blueScore;
+    return state;
   }
 
   toggleSpymaster = () => {
