@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import wordList from './words';
 import shuffleSeed from 'shuffle-seed';
 import Card from './Card';
+import Timer from './Timer';
 import i18n from './i18n';
 
 function saveGame(state) {
@@ -43,16 +44,27 @@ function insertParam(key, value) {
   const newUrl = window.location.origin + '?' + kvp.join('&');
   window.history.replaceState(null, null, newUrl);
 }
-
+const Wrapper = styled.div`
+  color: ${(props) => (props.darkMode ? 'white' : 'black')};
+  width: 100%;
+  height: 100vh;
+  background-color: ${(props) => (props.darkMode ? '#202225' : 'whtie')};
+`;
 const Game = styled.div`
   width: 700px;
   margin: 0 auto;
 `;
-
-const Score = styled.div`
+const Dash = styled.span`
+  margin: 0 7px;
+`;
+const ScoreAndTimer = styled.div`
   font-size: 1.5em;
   margin: 10px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
+const Score = styled.div``;
 
 const Board = styled.div`
   display: flex;
@@ -122,11 +134,11 @@ export default class App extends Component {
       'neutral',
       'neutral',
       'neutral',
-      'neutral'
+      'neutral',
     ];
     colors = [
       ...colors,
-      shuffleSeed.shuffle(['red', 'blue'], seed).slice(0, 1)[0]
+      shuffleSeed.shuffle(['red', 'blue'], seed).slice(0, 1)[0],
     ];
     colors = shuffleSeed.shuffle(colors, seed);
 
@@ -140,25 +152,26 @@ export default class App extends Component {
     state.redScore = score.redScore;
     state.blueScore = score.blueScore;
     state.language = language;
+    state.darkMode = false;
     return state;
   }
 
   toggleSpymaster = () => {
-    this.setState(state => {
+    this.setState((state) => {
       const newState = {
-        spymaster: !state.spymaster
+        spymaster: !state.spymaster,
       };
       saveGame(newState);
       return newState;
     });
   };
 
-  calculateScore = state => {
+  calculateScore = (state) => {
     let redCount = 0;
     let redFound = 0;
     let blueCount = 0;
     let blueFound = 0;
-    state.cards.forEach(card => {
+    state.cards.forEach((card) => {
       if (card.color === 'red') {
         redCount += 1;
         if (card.found) {
@@ -173,12 +186,12 @@ export default class App extends Component {
     });
     return {
       redScore: redCount - redFound,
-      blueScore: blueCount - blueFound
+      blueScore: blueCount - blueFound,
     };
   };
 
-  onCardClick = i => {
-    this.setState(state => {
+  onCardClick = (i) => {
+    this.setState((state) => {
       const newState = JSON.parse(JSON.stringify(state));
       newState.cards[i].found = true;
       const score = this.calculateScore(newState);
@@ -189,15 +202,30 @@ export default class App extends Component {
     });
   };
 
-  changeLanguage = language => {
+  changeLanguage = (language) => {
     insertParam('language', language);
     const newState = this.initGame(this.state.seed, language);
     this.setState(newState);
     saveGame(newState);
   };
 
+  toggleDarkMode = () => {
+    this.setState((state) => {
+      const newState = { ...state, darkMode: !state.darkMode };
+      saveGame(newState);
+      return newState;
+    });
+  };
+
   render() {
-    const { redScore, blueScore, cards, spymaster, language } = this.state;
+    const {
+      redScore,
+      blueScore,
+      cards,
+      spymaster,
+      language,
+      darkMode,
+    } = this.state;
     const cardComponents = cards.map((card, i) => (
       <Card
         spymaster={spymaster}
@@ -212,31 +240,43 @@ export default class App extends Component {
     ));
 
     return (
-      <Game>
-        <button
-          onClick={() => this.changeLanguage('eng')}
-          disabled={language === 'eng'}
-        >
-          ENG
-        </button>
-        <button
-          onClick={() => this.changeLanguage('nl')}
-          disabled={language === 'nl'}
-        >
-          NL
-        </button>
-        <Score>
-          <span style={{ color: '#4183cc' }}>{blueScore}</span> -{' '}
-          <span style={{ color: '#d13030' }}>{redScore}</span>
-        </Score>
-        <Board>{cardComponents}</Board>
-        <button onClick={this.toggleSpymaster}>
-          {spymaster
-            ? i18n[language].turn_off_spymaster
-            : i18n[language].turn_on_spymaster}
-        </button>
-        <button onClick={startNewGame}>{i18n[language].new_game}</button>
-      </Game>
+      <Wrapper darkMode={darkMode}>
+        <Game>
+          <button
+            onClick={() => this.changeLanguage('eng')}
+            disabled={language === 'eng'}
+          >
+            ENG
+          </button>
+          <button
+            onClick={() => this.changeLanguage('nl')}
+            disabled={language === 'nl'}
+          >
+            NL
+          </button>
+          <ScoreAndTimer>
+            <Score>
+              <span style={{ color: '#4183cc' }}>{blueScore}</span>
+              <Dash>-</Dash>
+              <span style={{ color: '#d13030' }}>{redScore}</span>
+            </Score>
+            <Timer language={language} />
+          </ScoreAndTimer>
+
+          <Board>{cardComponents}</Board>
+          <button onClick={this.toggleSpymaster}>
+            {spymaster
+              ? i18n[language].turn_off_spymaster
+              : i18n[language].turn_on_spymaster}
+          </button>
+          <button onClick={startNewGame}>{i18n[language].new_game}</button>
+          <button onClick={this.toggleDarkMode}>
+            {darkMode
+              ? i18n[language].turn_off_dark_mode
+              : i18n[language].turn_on_dark_mode}
+          </button>
+        </Game>
+      </Wrapper>
     );
   }
 }

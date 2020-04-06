@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 
 const Base = styled.div`
+  color: black;
   text-align: center;
   /* border: 1px solid black; */
   background-color: #ddd;
@@ -24,13 +25,13 @@ const Base = styled.div`
 `;
 
 const Found = styled(Base)`
-  color: ${props => textColorMatch[props.color]};
-  background-color: ${props => teamColorMatch[props.color]};
-  border: 1px solid ${props => teamColorMatch[props.color]};
+  color: ${(props) => textColorMatch[props.color]};
+  background-color: ${(props) => teamColorMatch[props.color]};
+  border: 1px solid ${(props) => teamColorMatch[props.color]};
 `;
 
 const SpymasterUnfound = styled(Base)`
-  color: ${props => unfoundTeamColorMatch[props.color]};
+  color: ${(props) => unfoundTeamColorMatch[props.color]};
   background-color: #ccc;
   border: 1px solid #ccc;
 `;
@@ -39,19 +40,19 @@ const textColorMatch = {
   red: 'white',
   blue: 'white',
   neutral: 'black',
-  black: 'white'
+  black: 'white',
 };
 
 const teamColorMatch = {
   red: '#d13030',
   blue: '#4183cc',
   neutral: '#f9e4b7',
-  black: 'black'
+  black: 'black',
 };
 
 const unfoundTeamColorMatch = {
   ...teamColorMatch,
-  neutral: '#be8200'
+  neutral: '#be8200',
 };
 
 export default class Card extends Component {
