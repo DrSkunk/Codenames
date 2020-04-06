@@ -6,6 +6,7 @@ import shuffleSeed from 'shuffle-seed';
 import Card from './Card';
 import Timer from './Timer';
 import i18n from './i18n';
+import Instructions from './Instructions';
 
 function saveGame(state) {
   localStorage.setItem('savedGame', JSON.stringify(state));
@@ -40,7 +41,6 @@ function insertParam(key, value) {
     kvp[kvp.length] = [key, value].join('=');
   }
 
-  //this will reload the page, it's likely better to store this until finished
   const newUrl = window.location.origin + '?' + kvp.join('&');
   window.history.replaceState(null, null, newUrl);
 }
@@ -102,11 +102,19 @@ export default class App extends Component {
     } catch (error) {
       this.state = this.initGame(seed, language);
     }
+
+    const darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    if (darkMode === true) {
+      this.state.darkMode = true;
+    } else {
+      this.state.darkMode = false;
+    }
   }
 
   componentDidCatch(error, info) {
     this.setState({ hasError: true });
     localStorage.removeItem('savedGame');
+    localStorage.removeItem('darkMode');
   }
 
   initGame(seed, language) {
@@ -152,7 +160,6 @@ export default class App extends Component {
     state.redScore = score.redScore;
     state.blueScore = score.blueScore;
     state.language = language;
-    state.darkMode = false;
     return state;
   }
 
@@ -161,7 +168,7 @@ export default class App extends Component {
       const newState = {
         spymaster: !state.spymaster,
       };
-      saveGame(newState);
+      //saveGame(newState);
       return newState;
     });
   };
@@ -193,11 +200,16 @@ export default class App extends Component {
   onCardClick = (i) => {
     this.setState((state) => {
       const newState = JSON.parse(JSON.stringify(state));
-      newState.cards[i].found = true;
+      if (state.cards[i].found) {
+        newState.cards[i].found = false;
+      } else {
+        newState.cards[i].found = true;
+      }
       const score = this.calculateScore(newState);
       newState.redScore = score.redScore;
       newState.blueScore = score.blueScore;
       saveGame(newState);
+
       return newState;
     });
   };
@@ -207,13 +219,14 @@ export default class App extends Component {
     const newState = this.initGame(this.state.seed, language);
     this.setState(newState);
     saveGame(newState);
+    localStorage.setItem('language', language);
   };
 
   toggleDarkMode = () => {
     this.setState((state) => {
-      const newState = { ...state, darkMode: !state.darkMode };
-      saveGame(newState);
-      return newState;
+      const newMode = !state.darkMode;
+      localStorage.setItem('darkMode', newMode);
+      return { darkMode: newMode };
     });
   };
 
@@ -275,6 +288,7 @@ export default class App extends Component {
               ? i18n[language].turn_off_dark_mode
               : i18n[language].turn_on_dark_mode}
           </button>
+          <Instructions language={language} darkMode={darkMode} />
         </Game>
       </Wrapper>
     );
