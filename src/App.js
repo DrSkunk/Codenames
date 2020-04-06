@@ -41,7 +41,8 @@ function insertParam(key, value) {
     kvp[kvp.length] = [key, value].join('=');
   }
 
-  const newUrl = window.location.origin + '?' + kvp.join('&');
+  const newUrl =
+    window.location.origin + window.location.pathname + '?' + kvp.join('&');
   window.history.replaceState(null, null, newUrl);
 }
 const Wrapper = styled.div`
