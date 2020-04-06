@@ -588,6 +588,7 @@ export default {
     'hagel',
     'riem',
     'pupil',
-    'oranje'
+    'oranje',
+    'kurk'
   ]
 };
