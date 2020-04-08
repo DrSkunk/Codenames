@@ -168,7 +168,7 @@ export default class App extends Component {
       .shuffle(words, seed)
       .slice(0, 25)
       .map((word, i) => ({ word, found: false, color: colors[i] }));
-    const state = { seed, cards, spymaster: false, redScore: 0, blueScore: 0 };
+    const state = { seed, cards, spymaster: false, inverted: false, redScore: 0, blueScore: 0 };
     const score = this.calculateScore(state);
     state.redScore = score.redScore;
     state.blueScore = score.blueScore;
@@ -185,6 +185,21 @@ export default class App extends Component {
       return newState;
     });
   };
+
+  invertCards = () => {
+    this.setState((state) => {
+      var newCards = [...state.cards];
+      for (var i = 0; i < state.cards.length; i++) {
+        newCards[i].found = !state.inverted;
+      }
+      const newState = {
+        inverted: !state.inverted,
+        cards: newCards
+      }
+      return newState;
+    });
+  };
+
 
   calculateScore = (state) => {
     let redCount = 0;
@@ -295,6 +310,7 @@ export default class App extends Component {
               ? i18n[language].turn_off_spymaster
               : i18n[language].turn_on_spymaster}
           </button>
+            <button onClick={this.invertCards}>{i18n[language].invert_cards}</button>
           <button onClick={startNewGame}>{i18n[language].new_game}</button>
           <button onClick={this.toggleDarkMode}>
             {darkMode
