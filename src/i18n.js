@@ -20,6 +20,7 @@ export default {
   nl: {
     turn_on_spymaster: 'Spymaster modus aanzetten',
     invert_cards: 'Kaarten inverteren',
+
     turn_off_spymaster: 'Spymaster modus afzetten',
     new_game: 'Start nieuw spel',
     turn_on_dark_mode: 'Donkere modus aanzetten',
