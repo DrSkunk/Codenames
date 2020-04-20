@@ -57,15 +57,14 @@ const unfoundTeamColorMatch = {
 
 export default class Card extends Component {
   render() {
-    const { tabIndex, children, found, color, spymaster, onClick, inverted } = this.props;
+    const { tabIndex, children, found, color, spymaster, onClick } = this.props;
 
-    const props = { tabIndex: tabIndex, color, onClick, inverted };
+    const props = { tabIndex: tabIndex, color, onClick };
     if (spymaster) {
-      if (found === inverted) {
-        return <SpymasterUnfound {...props}>{children}</SpymasterUnfound>;
-      }
-      else {
+      if (found) {
         return <Found {...props}>{children}</Found>;
+      } else {
+        return <SpymasterUnfound {...props}>{children}</SpymasterUnfound>;
       }
     } else {
       if (found) {

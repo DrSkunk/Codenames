@@ -167,7 +167,7 @@ export default class App extends Component {
     const cards = shuffleSeed
       .shuffle(words, seed)
       .slice(0, 25)
-      .map((word, i) => ({ word, found: false, color: colors[i], inverted: false }));
+      .map((word, i) => ({ word, found: false, color: colors[i] }));
     const state = { seed, cards, spymaster: false, inverted: false, redScore: 0, blueScore: 0 };
     const score = this.calculateScore(state);
     state.redScore = score.redScore;
@@ -190,7 +190,7 @@ export default class App extends Component {
     this.setState((state) => {
       var newCards = [...state.cards];
       for (var i = 0; i < state.cards.length; i++) {
-        newCards[i].inverted = !state.inverted;
+        newCards[i].found = !state.inverted;
       }
       const newState = {
         inverted: !state.inverted,
@@ -273,7 +273,6 @@ export default class App extends Component {
         key={card.word}
         color={card.color}
         found={card.found}
-        inverted={card.inverted}
         tabIndex={i}
         onClick={() => this.onCardClick(i)}
       >
@@ -306,24 +305,18 @@ export default class App extends Component {
           </ScoreAndTimer>
 
           <Board>{cardComponents}</Board>
-          <div>
-            <button onClick={this.toggleSpymaster}>
-              {spymaster
-                ? i18n[language].turn_off_spymaster
-                : i18n[language].turn_on_spymaster}
-            </button>
-              <button
-              style={{visibility: spymaster ? 'visible' : 'hidden' }}
-              onClick={this.invertCards}>{i18n[language].invert_cards}</button>
-          </div>
-          <div>
-            <button onClick={startNewGame}>{i18n[language].new_game}</button>
-            <button onClick={this.toggleDarkMode}>
-              {darkMode
-                ? i18n[language].turn_off_dark_mode
-                : i18n[language].turn_on_dark_mode}
-            </button>
-          </div>
+          <button onClick={this.toggleSpymaster}>
+            {spymaster
+              ? i18n[language].turn_off_spymaster
+              : i18n[language].turn_on_spymaster}
+          </button>
+            <button onClick={this.invertCards}>{i18n[language].invert_cards}</button>
+          <button onClick={startNewGame}>{i18n[language].new_game}</button>
+          <button onClick={this.toggleDarkMode}>
+            {darkMode
+              ? i18n[language].turn_off_dark_mode
+              : i18n[language].turn_on_dark_mode}
+          </button>
           <Instructions language={language} darkMode={darkMode} />
         </Game>
         <SourceCode
