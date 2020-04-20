@@ -7,7 +7,6 @@ import Card from './Card';
 import Timer from './Timer';
 import i18n from './i18n';
 import Instructions from './Instructions';
-import GameSetter from './GameSetter'
 
 function saveGame(state) {
   localStorage.setItem('savedGame', JSON.stringify(state));
@@ -50,7 +49,7 @@ const Wrapper = styled.div`
   color: ${(props) => (props.darkMode ? 'white' : 'black')};
   width: 100%;
   height: 100vh;
-  background-color: ${(props) => (props.darkMode ? '#202225' : 'white')};
+  background-color: ${(props) => (props.darkMode ? '#202225' : 'whtie')};
 `;
 const Game = styled.div`
   width: 700px;
@@ -131,7 +130,7 @@ export default class App extends Component {
     localStorage.removeItem('darkMode');
   }
 
-  initGame(seed, language, customwords) {
+  initGame(seed, language) {
     let colors = [
       'red',
       'red',
@@ -164,12 +163,12 @@ export default class App extends Component {
     ];
     colors = shuffleSeed.shuffle(colors, seed);
 
-    const words = customwords != null ? customwords : language === 'eng' ? wordList.english : wordList.dutch;
+    const words = language === 'eng' ? wordList.english : wordList.dutch;
     const cards = shuffleSeed
       .shuffle(words, seed)
       .slice(0, 25)
       .map((word, i) => ({ word, found: false, color: colors[i], inverted: false }));
-    const state = { seed, cards, spymaster: false, inverted: false, redScore: 0, blueScore: 0, words: words};
+    const state = { seed, cards, spymaster: false, inverted: false, redScore: 0, blueScore: 0 };
     const score = this.calculateScore(state);
     state.redScore = score.redScore;
     state.blueScore = score.blueScore;
@@ -243,16 +242,6 @@ export default class App extends Component {
     });
   };
 
-  startWithCustomWords = (words) => {
-    if (words == null) {
-      startNewGame();
-      return;
-    }
-    const newState = this.initGame(nanoid(), this.state.language, words);
-    this.setState(newState);
-    saveGame(newState);
-  }
-
   changeLanguage = (language) => {
     insertParam('language', language);
     const newState = this.initGame(this.state.seed, language);
@@ -317,7 +306,7 @@ export default class App extends Component {
           </ScoreAndTimer>
 
           <Board>{cardComponents}</Board>
-          <div className='gameitem'>
+          <div>
             <button onClick={this.toggleSpymaster}>
               {spymaster
                 ? i18n[language].turn_off_spymaster
@@ -327,12 +316,14 @@ export default class App extends Component {
               style={{visibility: spymaster ? 'visible' : 'hidden' }}
               onClick={this.invertCards}>{i18n[language].invert_cards}</button>
           </div>
-          <button onClick={this.toggleDarkMode}>
-            {darkMode ? i18n[language].turn_off_dark_mode : i18n[language].turn_on_dark_mode}
-          </button>
-          <GameSetter 
-            startNewGame = {this.startWithCustomWords}
-            language={language}/>
+          <div>
+            <button onClick={startNewGame}>{i18n[language].new_game}</button>
+            <button onClick={this.toggleDarkMode}>
+              {darkMode
+                ? i18n[language].turn_off_dark_mode
+                : i18n[language].turn_on_dark_mode}
+            </button>
+          </div>
           <Instructions language={language} darkMode={darkMode} />
         </Game>
         <SourceCode

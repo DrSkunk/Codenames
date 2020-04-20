@@ -16,11 +16,7 @@ export default {
     official_rules: 'Official rules',
     instructions_link:
       'https://czechgames.com/files/rules/codenames-rules-en.pdf',
-    use_custom_words: 'use custom words (at least 25!)',
-    custom_words_placeholder: 'paste here your own words, seperated by a comma: tree, couch, clock, ...'
-  }
-,
-
+  },
   nl: {
     turn_on_spymaster: 'Spymaster modus aanzetten',
     invert_cards: 'Kaarten inverteren',
@@ -38,7 +34,5 @@ export default {
     official_rules: 'Officiële regels',
     instructions_link:
       'https://czechgames.com/files/rules/codenames-rules-nl.pdf',
-      use_custom_words: 'kies zelf je woorden (minstens 25!)',
-      custom_words_placeholder: 'plak hier je zelfgekozen woorden, gescheiden door een komma: boom, zetel, klok, ...' 
   },
 };
