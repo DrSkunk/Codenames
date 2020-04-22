@@ -131,7 +131,7 @@ export default class App extends Component {
     localStorage.removeItem('darkMode');
   }
 
-  initGame(seed, language, customwords) {
+  initGame(seed, language, customWords) {
     let colors = [
       'red',
       'red',
@@ -165,13 +165,13 @@ export default class App extends Component {
     colors = shuffleSeed.shuffle(colors, seed);
 
     insertParam("seed", seed);
-    if (customwords != null) {
-      insertParam("words", customwords);     
+    if (customWords != null) {
+      insertParam("words", customWords);     
     }
     if (window.location.href.includes("&words=")) {
-      customwords = window.location.href.split("&words=")[1].split(',');
+      customWords = window.location.href.split("&words=")[1].split(',');
     }
-    const words = customwords != null ? customwords : language === 'eng' ? wordList.english : wordList.dutch;
+    const words = customWords != null ? customWords : language === 'eng' ? wordList.english : wordList.dutch;
     const cards = shuffleSeed
       .shuffle(words, seed)
       .slice(0, 25)
