@@ -22,7 +22,8 @@ export default class GameSetter extends Component {
   }
 
   startGame() {
-    var wordArray = this.state.words.split(',');
+    const words = this.state.words.replace(/, /g, ",");
+    var wordArray = Array.from(new Set(words.split(',')));
     if (wordArray.length < 25) {
       wordArray = null;
     }
@@ -40,6 +41,9 @@ export default class GameSetter extends Component {
               value={this.state.words} 
               cols='96' rows='4'
               onChange={this.handleChange}/>
+              <div>
+                <span>{i18n[this.props.language].game_url_click}: <button onClick={() => {navigator.clipboard.writeText(this.props.url)}}>{i18n[this.props.language].copy_clipboard}</button></span> 
+              </div>
         </Wrapper>
       );       
 

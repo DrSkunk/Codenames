@@ -131,7 +131,7 @@ export default class App extends Component {
     localStorage.removeItem('darkMode');
   }
 
-  initGame(seed, language, customwords) {
+  initGame(seed, language, customWords) {
     let colors = [
       'red',
       'red',
@@ -164,7 +164,14 @@ export default class App extends Component {
     ];
     colors = shuffleSeed.shuffle(colors, seed);
 
-    const words = customwords != null ? customwords : language === 'eng' ? wordList.english : wordList.dutch;
+    insertParam("seed", seed);
+    if (customWords != null) {
+      insertParam("words", customWords);     
+    }
+    if (window.location.href.includes("&words=")) {
+      customWords = window.location.href.split("&words=")[1].split(',');
+    }
+    const words = customWords != null ? customWords : language === 'eng' ? wordList.english : wordList.dutch;
     const cards = shuffleSeed
       .shuffle(words, seed)
       .slice(0, 25)
@@ -172,6 +179,7 @@ export default class App extends Component {
     const state = { seed, cards, spymaster: false, inverted: false, redScore: 0, blueScore: 0, words: words};
     const score = this.calculateScore(state);
     state.redScore = score.redScore;
+    state.url = window.location.href;
     state.blueScore = score.blueScore;
     state.language = language;
     return state;
@@ -277,6 +285,7 @@ export default class App extends Component {
       spymaster,
       language,
       darkMode,
+      url,
     } = this.state;
     const cardComponents = cards.map((card, i) => (
       <Card
@@ -332,7 +341,8 @@ export default class App extends Component {
           </button>
           <GameSetter 
             startNewGame = {this.startWithCustomWords}
-            language={language}/>
+            language={language}
+            url = {url}/>
           <Instructions language={language} darkMode={darkMode} />
         </Game>
         <SourceCode
